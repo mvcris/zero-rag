@@ -1,6 +1,6 @@
-import { BaseEmbedding } from './base-embedding';
+import { BaseEmbedding } from './drivers/base-embedding';
 import { OpenAIConfig, OpenAIEmbeddingProvider } from './open-ai';
-import { QdrantRag, QdrantConfig } from './qdrant-rag';
+import { QdrantRag, QdrantConfig } from './drivers/qdrant/qdrant-rag';
 
 export type ProviderType = 'qdrant' | 'pgvector';
 
@@ -87,3 +87,29 @@ export class EasyRag<T extends ProviderType, E extends EmbeddingProviderType> {
     throw new Error('Provider not supported');
   }
 }
+
+const execute = async () => {
+  const rag = new EasyRag({
+    store: {
+      provider: 'qdrant',
+      config: {
+        host: 'localhost',
+        port: '6333',
+      },
+    },
+    embedding: {
+      provider: 'openai',
+      config: {
+        model: 'text-embedding-3-small',
+      },
+    },
+  });
+  await rag.store.createCollection('test', {
+    vectorSize: 1536,
+    distance: 'Cosine',
+  });
+};
+
+execute().then(() => {
+  console.log('Done');
+});

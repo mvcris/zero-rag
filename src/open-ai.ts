@@ -1,4 +1,4 @@
-import { BaseEmbedding } from './base-embedding';
+import { BaseEmbedding } from './drivers/base-embedding';
 
 export type OpenAIConfig = {
   model: string;

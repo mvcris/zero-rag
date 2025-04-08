@@ -18,6 +18,7 @@ Easy RAG is a TypeScript library that simplifies the implementation of Retrieval
 - [Usage Examples](#usage-examples)
 - [Development](#development)
 - [Contributing](#contributing)
+- [TODO](#todo)
 - [License](#license)
 
 ## Features
@@ -199,6 +200,19 @@ Please make sure to:
 - Add tests for new features
 - Update documentation as needed
 - Keep the development status warning in mind
+
+## TODO
+
+- [ ] Add PostgreSQL (pgvector) and Qdrant vector store support
+- [ ] Add more embedding providers (e.g., Cohere, Google)
+- [ ] Implement batch operations for vector stores
+- [ ] Creating fragment system
+- [ ] Add support for hybrid search (vector + keyword)
+- [ ] Add caching layer for embeddings
+- [ ] Improve error handling and logging
+- [ ] Add more comprehensive tests
+- [ ] Create detailed documentation with examples
+- [ ] Add benchmarks and performance tests
 
 ## License
 

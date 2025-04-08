@@ -1,10 +1,14 @@
 {
   "name": "zero-rag",
   "version": "1.0.0",
-  "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "ts-node-dev src/index.ts"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +26,9 @@
     "eslint-plugin-prettier": "^5.2.6",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
-    "prettier-eslint": "^16.3.0"
+    "prettier-eslint": "^16.3.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "@langchain/aws": "^1.0.0",

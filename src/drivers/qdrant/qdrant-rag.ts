@@ -1,15 +1,16 @@
-import { EmbeddingProviderOptions } from '.';
-import { BaseEmbedding } from './base-embedding';
-import { BaseRag, BaseCreateCollectionOptions } from './base-rag';
+import { EmbeddingProviderOptions } from '../../index';
+import { Document } from '../../types/document';
+import { BaseEmbedding } from '../base-embedding';
+import { BaseRag, BaseCreateCollectionOptions } from '../base-rag';
 import type { QdrantClient } from '@qdrant/js-client-rest';
 
 export type QdrantConfig = {
-  url: string;
-  apiKey: string;
+  host: string;
+  port: string;
 };
 
 export type QdrantCreateCollectionOptions = BaseCreateCollectionOptions & {
-  distance: 'cosine' | 'dot' | 'euclidean';
+  distance: 'Cosine' | 'Euclid' | 'Dot' | 'Manhattan';
 };
 
 export class QdrantRag extends BaseRag<QdrantCreateCollectionOptions, QdrantConfig> {
@@ -26,16 +27,25 @@ export class QdrantRag extends BaseRag<QdrantCreateCollectionOptions, QdrantConf
     if (!this.qdrantClient) {
       const { QdrantClient } = await import('@qdrant/js-client-rest');
       this.qdrantClient = new QdrantClient({
-        host: this.qdrantConfig.url,
-        apiKey: this.qdrantConfig.apiKey,
+        host: this.qdrantConfig.host,
+        port: parseInt(this.qdrantConfig.port),
       });
     }
     return this.qdrantClient;
   }
 
-  async addDocument(document: string): Promise<void> {
-    const embeddings = await this.embeddingProvider.generateEmbeddings(document);
-    throw new Error('Method not implemented.');
+  async addDocument(document: Document): Promise<void> {
+    const embeddings = await this.embeddingProvider.generateEmbeddings(document.content);
+    await this.getQdrantClient();
+    await this.qdrantClient?.upsert(document.collectionName, {
+      points: [
+        {
+          id: document.id ?? crypto.randomUUID(),
+          vector: embeddings,
+          payload: document.metadata,
+        },
+      ],
+    });
   }
 
   async query(query: string): Promise<string> {
@@ -48,6 +58,13 @@ export class QdrantRag extends BaseRag<QdrantCreateCollectionOptions, QdrantConf
     options: QdrantCreateCollectionOptions
   ): Promise<void> {
     await this.getQdrantClient();
-    console.log(`Creating Qdrant collection with distance metric: ${options.distance}`);
+    await this.qdrantClient?.createCollection(collectionName, {
+      vectors: {
+        config: {
+          size: options.vectorSize,
+          distance: options.distance,
+        },
+      },
+    });
   }
 }
